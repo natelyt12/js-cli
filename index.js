@@ -22,6 +22,7 @@ sent.addEventListener('click', () => {
 })
 
 function submit() {
+    text('\n')
     text('Bảng số liệu của bạn trông sẽ như thế này')
     n_list = []
     for (let i = 1; i <= col.value; i++) {
@@ -32,36 +33,71 @@ function submit() {
     xavr = []
     let z = Number(ap.value)
     for (let i = 1; i <= Number(col.value); i++) {
-        ap_list.push(`[${z};${z + Number(delap.value)})`)
-        xavr.push(Math.round((((z + Number(delap.value)) / 2)*100)/100))
-        z = z + Number(delap.value)
+        ap_list.push(`[${z};${Math.round((z + Number(delap.value))*100)/100})`)
+        xavr.push(
+            Math.round(((z + (z+Number(delap.value)))/2)*100)/100
+        )
+        z = Math.round((z + Number(delap.value))*100)/100
     }
-    text(xavr)
 
     let t = document.createElement('table')
     let tr1 = document.createElement('tr')
     let tr2 = document.createElement('tr')
+    let tr3 = document.createElement('tr')
+    tr3.style.color = 'grey'
 
     let tdt = document.createElement('td')
     tdt.innerText = 'Tần số'
     tr1.appendChild(tdt)
     for (let i = 0; i < n_list.length; i++) {
         let td = document.createElement('td')
+        if (n_list[i] == '') {
+            n_list[i] = 0
+        }
         td.innerText = n_list[i]
         tr1.appendChild(td)
     }
 
     let tdn = document.createElement('td')
-    tdn.innerText = '?'
+    tdn.innerText = 'Nhóm'
     tr2.appendChild(tdn)
     for (let i = 0; i < ap_list.length; i++) {
         let td = document.createElement('td')
         td.innerText = ap_list[i]
         tr2.appendChild(td)
     }
+
+    let gtdd = document.createElement('td')
+    gtdd.innerText = 'GTĐD'
+    tr3.appendChild(gtdd)
+    for (let i = 0; i < xavr.length; i++) {
+        let td = document.createElement('td')
+        td.innerText = xavr[i]
+        tr3.appendChild(td)
+    }
+
+    
     t.appendChild(tr2)
     t.appendChild(tr1)
+    t.appendChild(tr3)
     ui.appendChild(t)
+
+    calc()
+}
+
+function calc() {
+    text('\n')
+    text('Thông tin mẫu số liệu:')
+
+    // n
+    n = 0 
+    for (let i = 0; i < n_list.length; i++) {
+        n += Number(n_list[i])
+    }
+    text(`n: ${n}`)
+
+    //Q1
+    k1 = (n/2)
 }
 
 function text(text) {
