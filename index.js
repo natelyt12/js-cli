@@ -5,6 +5,7 @@ let delap = document.getElementById('delap')
 let col = document.getElementById('col')
 let sent = document.getElementById('sent')
 
+test = [3,12,15,20,10]
 
 sent.addEventListener('click', () => {
     if (col.value < 3 || col.value > 10) {
@@ -14,29 +15,40 @@ sent.addEventListener('click', () => {
         errorr('Không được là số âm hoặc 0')
     } else {
         for (let i = 0; i < col.value; i++) {
-            input(`Nhập tần số cột ${i + 1}`, 'number', `col_${i+1}`)
+            input(`Nhập tần số cột ${i + 1}`, 'number', `col_${i+1}`, test[i])
         }
         button('Tính toán', 'submit()')
         sent.disabled = 'true'
     }
 })
 
+function rnd(num, lmtron) {
+    return Math.round(num * lmtron) / lmtron
+}
+
 function submit() {
-    text('\n')
+    text('_____________________________________')
     text('Bảng số liệu của bạn trông sẽ như thế này')
+
     n_list = []
+    ap_list = []
+    ap_list_obj = []
+    xavr = []
+
     for (let i = 1; i <= col.value; i++) {
         n_list.push(document.getElementById(`col_${i}`).value)
     }
 
-    ap_list = []
-    xavr = []
     let z = Number(ap.value)
     for (let i = 1; i <= Number(col.value); i++) {
-        ap_list.push(`[${z};${Math.round((z + Number(delap.value))*100)/100})`)
-        xavr.push(
-            Math.round(((z + (z+Number(delap.value)))/2)*100)/100
-        )
+        stZ = z
+        enZ = Math.round((z + Number(delap.value)) * 100) / 100
+        obj = new Object()
+        obj.start = stZ
+        obj.end = enZ
+        ap_list_obj.push(obj)
+        ap_list.push(`[${stZ};${enZ})`)
+        xavr.push((stZ+enZ)/2)
         z = Math.round((z + Number(delap.value))*100)/100
     }
 
@@ -96,8 +108,61 @@ function calc() {
     }
     text(`n: ${n}`)
 
-    //Q1
-    k1 = (n/2)
+    // Trung vị?
+    a = 0
+    for (let i = 0; i < xavr.length; i++) {
+        a = a + Number(xavr[i] * n_list[i])
+    }
+    b = Number(rnd(a/n,1000))
+    text(`Trung vị (x): ${b}`)
+
+    // q1
+    k1 = rnd(n / 4, 1000)
+    c = 0
+    for (let i = 0; i < n_list.length; i++) {
+        c += Number(n_list[i])
+        if (c > k1) {
+            text(`Q1 nằm tại cột ${i+1}, và bằng ${k1}`)
+            e = c - n_list[i]
+            tpv1 = rnd(Number(ap_list_obj[i].start) + ((k1 - e) * Number(delap.value) / n_list[i]), 1000)
+            break
+        }
+    }
+
+    // q2
+    k2 = Number((2 * n) / 4)
+    e = 0
+    for (let i = 0; i < n_list.length; i++) {
+        e += Number(n_list[i])
+        if (e > k2) {
+            text(`Q2 nằm tại cột ${i + 1}, và bằng ${k2}`)
+            g = e - n_list[i]
+            tpv2 = rnd(Number(ap_list_obj[i].start) + ((k2 - g) * Number(delap.value) / n_list[i]), 1000)
+            break
+        }
+    }
+
+    // q3
+    k3 = rnd((3 * n) / 4, 1000)
+    d = 0
+    for (let i = 0; i < n_list.length; i++) {
+        d += Number(n_list[i])
+        if (d > k3) {
+            text(`Q3 nằm tại cột ${i + 1}, và bằng ${k3}`)
+            // tpv3
+            f = d - n_list[i]
+            tpv3 = rnd(Number(ap_list_obj[i].start) + ((k3 - f) * Number(delap.value) / n_list[i]), 1000)
+            break
+        }
+    }
+
+    text(`Tứ phân vị thứ nhất: ${tpv1}`)
+    text(`Tứ phân vị thứ hai: ${tpv2}`)
+    text(`Tứ phân vị thứ ba: ${tpv3}`)
+
+    //kbt
+    text(`Khoảng biến thiên: ${tpv3-tpv1}`)
+
 }
 
 function text(text) {
@@ -113,11 +178,12 @@ function errorr(text) {
     ui.appendChild(t)
 }
 
-function input(placeholder, type, id) {
+function input(placeholder, type, id, value) {
     let i = document.createElement('input')
     i.placeholder = placeholder
     i.type = type
     i.id = id
+    i.value = value
     ui.appendChild(i)
 }
 
